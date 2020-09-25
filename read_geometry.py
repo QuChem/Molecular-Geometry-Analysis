@@ -5,24 +5,24 @@ import math, sys
 import argparse
 from sympy import *
 
-
+# X, X1 are dummy atoms.
 atomic_masses = {'H' : 1.00794, 'He': 4.00260, 'Li': 6.94100, 'Be': 9.01218, 'B' : 10.8110,
-			 	'C' : 12.0107, 'N' : 14.0067, 'O' : 15.9994, 'F' : 18.9984, 'Ne': 20.1797,
-		        'Na': 22.9898, 'Mg': 24.3050, 'Al': 26.9815, 'Si': 28.0855, 'P' : 30.9738,
-				'S' : 32.0650, 'Cl': 35.4530, 'Ar': 39.9480, 'K' : 39.0983, 'Ca': 40.0780,
-      			'Sc': 44.9559, 'Ti': 47.8670, 'V' : 50.9415, 'Cr': 51.9961, 'Mn': 54.9380,
-	       		'Fe': 55.8450, 'Co': 58.9332, 'Ni': 58.6934, 'Cu': 63.5460, 'Zn': 65.4090,
-		        'X' : 0.0, 'X1' : 0.0}
+		'C' : 12.0107, 'N' : 14.0067, 'O' : 15.9994, 'F' : 18.9984, 'Ne': 20.1797,
+		'Na': 22.9898, 'Mg': 24.3050, 'Al': 26.9815, 'Si': 28.0855, 'P' : 30.9738,
+		'S' : 32.0650, 'Cl': 35.4530, 'Ar': 39.9480, 'K' : 39.0983, 'Ca': 40.0780,
+      		'Sc': 44.9559, 'Ti': 47.8670, 'V' : 50.9415, 'Cr': 51.9961, 'Mn': 54.9380,
+	       	'Fe': 55.8450, 'Co': 58.9332, 'Ni': 58.6934, 'Cu': 63.5460, 'Zn': 65.4090,
+		'X' : 0.0, 'X1' : 0.0}
 
 
 # Atomic number of elements.
 atomic_znumber = {'H' : 1, 'He': 2, 'Li': 3, 'Be': 4, 'B' : 5,
-        		'C' : 6, 'N' : 7, 'O' : 8, 'F' : 9, 'Ne': 10,
-          		'Na': 11, 'Mg': 12, 'Al': 13, 'Si': 14, 'P' : 15,
-          		'S' : 16, 'Cl': 17, 'Ar': 18, 'K' : 19, 'Ca': 20,
-          		'Sc': 21, 'Ti': 22, 'V' : 23, 'Cr': 24, 'Mn': 25,
-          		'Fe': 26, 'Co': 27, 'Ni': 28, 'Cu': 29, 'Zn': 30,
-          		'X' : 0.0, 'X1': 0.0}
+        	'C' : 6, 'N' : 7, 'O' : 8, 'F' : 9, 'Ne': 10,
+          	'Na': 11, 'Mg': 12, 'Al': 13, 'Si': 14, 'P' : 15,
+          	'S' : 16, 'Cl': 17, 'Ar': 18, 'K' : 19, 'Ca': 20,
+          	'Sc': 21, 'Ti': 22, 'V' : 23, 'Cr': 24, 'Mn': 25,
+          	'Fe': 26, 'Co': 27, 'Ni': 28, 'Cu': 29, 'Zn': 30,
+          	'X' : 0.0, 'X1': 0.0}
 
 
 
@@ -66,13 +66,17 @@ def print_geom(atom_num, xyz_coords):
 		print ('\n', end = '')
 
 
-# Calculate distance between two cartesian coordinates
+
 def bond_distance(coords1, coords2):
+    """
+    Calculate distance between two cartesian coordinates
+    """
     r = 0.0
     for i in range(3):
         r += (coords2[i] - coords1[i]) ** 2
     d = round(math.sqrt(r), 8)
     return d
+
 
 def cross(a, b):
     c = [a[1]*b[2] - a[2]*b[1],
@@ -80,11 +84,15 @@ def cross(a, b):
          a[0]*b[1] - a[1]*b[0]]
     return c
 
+
+
 def dotproduct(v1, v2):
   return sum((a*b) for a, b in zip(v1, v2))
 
+
 def length(v):
   return math.sqrt(dotproduct(v, v))
+
 
 def angle(v1, v2):
   return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2))) * (180.0 / (math.pi))
@@ -119,7 +127,6 @@ def out_of_plane_angle(v1, v2, v3):
 	
 	return 90.0 - cos_angle
 
-#def center_of_mass(atom_num, xyz_coords):
 
 if __name__ == '__main__':
 
