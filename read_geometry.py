@@ -1,4 +1,3 @@
-# This script calculates the repulsion energy of a molecue in Hartree.
 # Title:	read_geometry.py
 # Author:	Reza Hemmati
 # Created	09/25/2020
