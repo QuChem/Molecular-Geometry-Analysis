@@ -1,6 +1,7 @@
-# Title:	read_geometry.py
+# Title:	geometry_analysis.py
 # Author:	Reza Hemmati
 # Created	09/25/2020
+# Modefied      10/05/2020
 #
 # This script is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -148,7 +149,7 @@ def out_of_plane_angle(v1, v2, v3):
 
 
 if __name__ == '__main__':
-
+	
 	parser = argparse.ArgumentParser(description='This script analyzes a user given xyz file.')
 	parser.add_argument('xyz_file', help='The filepath for the xyz file to analyze.')
 	parser.add_argument('-minimum_length', help = 'The minimum distance to consider atoms bonded.', type = float, default = 0.0)
@@ -159,3 +160,193 @@ if __name__ == '__main__':
 	symbols, coord = read_xyz(xyz_filename)
 	
 	print_geom(len(symbols), coord)
+	
+		natom = len(symbols) # Number of atoms in a molecule
+
+	print (F'\nInteratomic distances (bohr):')
+
+	for num1 in range(0, natom):
+		for num2 in range(0, natom):
+		    if num1 < num2:
+		        bond_length_12 = bond_distance(coord[num1], coord[num2])
+		        if bond_length_12 > args.minimum_length and bond_length_12 < args.maximum_length:
+		        	print(F'{num1 + 1}-{num2 + 1}  {bond_length_12:8.5f}')
+
+	print (F'\nBond angles:')
+	for num1 in range(0, natom):
+		for num2 in range(0, natom):
+			for num3 in range(0, natom):
+				if num1 != num2:
+					if num1 < num3  and num2 != num3:
+						if bond_distance(coord[num1], coord[num2]) < args.maximum_length and \
+									bond_distance(coord[num2], coord[num3]) < args.maximum_length:
+							
+							vec1 = coord[num1] - coord[num2]
+							vec2 = coord[num3] - coord[num2]
+
+							if length(vec1) == 0:
+								sys.stderr.write('\nCannot calculate angle for vectors with length zero 1\n')
+								sys.exit(1)
+							
+							if length(vec2) == 0:
+								sys.stderr.write('\nCannot calculate angle for vectors with length zero 2\n')
+								sys.exit(1)
+							
+							print (str(num1 + 1)+'-', str(num2 + 1)+'-', str(num3 + 1)+'-', F'{angle(vec1, vec2):13.8f}')
+
+
+	print (F'\nOut-of-plane angles:')
+	for num1 in range(0, natom):
+		for num3 in range(0, natom):
+			for num2 in range(0, natom):
+				for num4 in range(0, natom):
+					if num4 < num2:
+						if (num1 != num2 and \
+							num1 != num3 and \
+							num1 != num4 and \
+							num2 != num3 and \
+							num3 != num4 and \
+							bond_distance(coord[num1], coord[num3]) < 4.0 and \
+							bond_distance(coord[num2], coord[num3]) < 4.0 and \
+							bond_distance(coord[num3], coord[num4]) < 4.0):
+									
+							vec1 = coord[num1] - coord[num3]
+							vec2 = coord[num2] - coord[num3]
+							vec3 = coord[num4] - coord[num3]
+									
+							if length(vec1) == 0:
+								sys.stderr.write('\nCannot calculate angle for vectors with length zero 1\n')
+								sys.exit(1)
+									
+							if length(vec2) == 0:
+								sys.stderr.write('\nCannot calculate angle for vectors with length zero 2\n')
+								sys.exit(1)
+									
+							if length(vec3) == 0:
+								sys.stderr.write('\nCannot calculate angle for vectors with length zero 3\n')
+								sys.exit(1)
+									
+							print (str(num1)+'-', str(num2)+'-', str(num3)+'-', str(num4)+'-', F'{out_of_plane_angle(vec1, vec2, vec3):11.6f}')
+
+
+
+	print (F'\nTorsional angles:')
+	for num1 in range(0, natom):
+		for num2 in range(0, natom):
+			for num3 in range(0, natom):
+				for num4 in range(0, natom):
+					if num2 < num1:
+						if num3 < num2:
+							if num4 < num3:
+								if bond_distance(coord[num1], coord[num2]) < 4.0 and bond_distance(coord[num2], coord[num3]) < 4.0 and bond_distance(coord[num3], coord[num4]) < 4.0:
+									
+									vec1 = coord[num1] - coord[num2]
+									vec2 = coord[num3] - coord[num2]
+									vec3 = coord[num3] - coord[num4]
+									
+									if length(vec1) == 0:
+										sys.stderr.write('\nCannot calculate angle for vectors with length zero 1\n')
+										sys.exit(1)
+									
+									if length(vec2) == 0:
+										sys.stderr.write('\nCannot calculate angle for vectors with length zero 2\n')
+										sys.exit(1)
+									
+									if length(vec3) == 0:
+										sys.stderr.write('\nCannot calculate angle for vectors with length zero 3\n')
+										sys.exit(1)
+									
+									print (str(num1)+'-', str(num2)+'-', str(num3)+'-', str(num4)+'-', F'{dihedral(vec1, vec2, vec3):11.6f}')
+
+
+	# Find the center of mass (COM)
+	M = 0.0
+	xcm, ycm, zcm = 0.0, 0.0, 0.0
+
+	for i in range(natom):
+		if (symbols[i] == 'H'):
+			M += atomic_masses[symbols[i]]
+			xcm += atomic_masses[symbols[i]] * coord[i][0]
+			ycm += atomic_masses[symbols[i]] * coord[i][1]
+			zcm += atomic_masses[symbols[i]] * coord[i][2]
+
+		if (symbols[i] == 'C'):
+			M += atomic_masses[symbols[i]]
+			xcm += atomic_masses[symbols[i]] * coord[i][0]
+			ycm += atomic_masses[symbols[i]] * coord[i][1]
+			zcm += atomic_masses[symbols[i]] * coord[i][2]
+
+		if (symbols[i] == 'O'):
+			M += atomic_masses[symbols[i]]
+			xcm += atomic_masses[symbols[i]] * coord[i][0]
+			ycm += atomic_masses[symbols[i]] * coord[i][1]
+			zcm += atomic_masses[symbols[i]] * coord[i][2]
+		
+	print (F'\nMolecular center of mass in Bohr: {xcm / M :11.8f} {ycm / M :11.8f} {zcm / M :11.8f}\n')
+
+
+	# Translate a molecule to the molecular center of masse
+	def translated_geom(nom_atoms):
+		trans_geom = []
+		for i in range(nom_atoms):
+			trans_geom.append([symbols[i],  (coord[i][0] - xcm / M),\
+					(coord[i][1] - ycm / M), (coord[i][2] - zcm / M)])
+		return trans_geom
+		
+	trans_coordinates = translated_geom(natom)
+	#print ('\ntrans_coods', trans_coordinates)
+
+
+	# Principal Moments of Inertia
+	I = np.zeros([3, 3])
+	test_var = 0.0
+
+	for i in range(natom):
+		if (symbols[i] == 'H'):
+			#print (atomic_masses[symbols[i]])
+			I[0][0] += atomic_masses[symbols[i]] * (trans_coordinates[i][2] ** 2 + trans_coordinates[i][3] ** 2)
+			I[1][1] += atomic_masses[symbols[i]] * (trans_coordinates[i][1] ** 2 + trans_coordinates[i][3] ** 2)
+			I[2][2] += atomic_masses[symbols[i]] * (trans_coordinates[i][1] ** 2 + trans_coordinates[i][2] ** 2)
+			I[0][1] -= atomic_masses[symbols[i]] * trans_coordinates[i][1] * trans_coordinates[i][2]
+			I[0][2] -= atomic_masses[symbols[i]] * trans_coordinates[i][1] * trans_coordinates[i][3]
+			I[1][2] -= atomic_masses[symbols[i]] * trans_coordinates[i][2] * trans_coordinates[i][3]
+		
+		if (symbols[i] == 'C'):
+			#print (atomic_masses[symbols[i]])
+			I[0][0] += atomic_masses[symbols[i]] * (trans_coordinates[i][2] ** 2 + trans_coordinates[i][3] ** 2)
+			I[1][1] += atomic_masses[symbols[i]] * (trans_coordinates[i][1] ** 2 + trans_coordinates[i][3] ** 2)
+			I[2][2] += atomic_masses[symbols[i]] * (trans_coordinates[i][1] ** 2 + trans_coordinates[i][2] ** 2)
+			I[0][1] -= atomic_masses[symbols[i]] * trans_coordinates[i][1] * trans_coordinates[i][2]
+			I[0][2] -= atomic_masses[symbols[i]] * trans_coordinates[i][1] * trans_coordinates[i][3]
+			I[1][2] -= atomic_masses[symbols[i]] * trans_coordinates[i][2] * trans_coordinates[i][3]
+			
+		if (symbols[i] == 'O'):
+			#print (atomic_masses[symbols[i]])
+			I[0][0] += atomic_masses[symbols[i]] * (trans_coordinates[i][2] ** 2 + trans_coordinates[i][3] ** 2)
+			I[1][1] += atomic_masses[symbols[i]] * (trans_coordinates[i][1] ** 2 + trans_coordinates[i][3] ** 2)
+			I[2][2] += atomic_masses[symbols[i]] * (trans_coordinates[i][1] ** 2 + trans_coordinates[i][2] ** 2)
+			I[0][1] -= atomic_masses[symbols[i]] * trans_coordinates[i][1] * trans_coordinates[i][2]
+			I[0][2] -= atomic_masses[symbols[i]] * trans_coordinates[i][1] * trans_coordinates[i][3]
+			I[1][2] -= atomic_masses[symbols[i]] * trans_coordinates[i][2] * trans_coordinates[i][3]
+
+	I[1][0] = I[0][1]
+	I[2][0] = I[0][2]
+	I[2][1] = I[1][2]
+
+	print ('Moment of inertia tensor (amu Bohr^2):')
+	print (I)
+
+	M = Matrix(I)
+	# Use sympy.diagonalize() method  
+	P, D = M.diagonalize()
+	print (F'Principal moments of inertia (amu * bohr^2):\n {D[8]:10.6f} \t {D[4]:10.6f} \t {D[0]:10.9}\n')
+
+	A = 6.6260755E-34 * 1E-6 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[8])
+	B = 6.6260755E-34 * 1E-6 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[4])
+	C = 6.6260755E-34 * 1E-6 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[0])
+
+	print (F'Rotational constants (MHz):\n')
+	print (F'A = {A:9.3f} \t B = {B:9.3f} \t C = {C:9.3f}')
+
+
+# END OF FILE
