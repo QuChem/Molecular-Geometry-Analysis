@@ -161,7 +161,7 @@ if __name__ == '__main__':
 	
 	print_geom(len(symbols), coord)
 	
-		natom = len(symbols) # Number of atoms in a molecule
+	natom = len(symbols) # Number of atoms in a molecule
 
 	print (F'\nInteratomic distances (bohr):')
 
