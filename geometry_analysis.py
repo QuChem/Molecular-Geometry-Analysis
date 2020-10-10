@@ -294,7 +294,10 @@ if __name__ == '__main__':
 		return trans_geom
 		
 	trans_coordinates = translated_geom(natom)
-	#print ('\ntrans_coods', trans_coordinates)
+	
+	#for i in range(len(trans_coordinates)):
+	#	print (trans_coordinates[i])
+	#print ('\n')
 
 
 	# Principal Moments of Inertia
