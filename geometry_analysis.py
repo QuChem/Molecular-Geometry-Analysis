@@ -344,12 +344,12 @@ if __name__ == '__main__':
 	P, D = M.diagonalize()
 	print (F'Principal moments of inertia (amu * bohr^2):\n {D[8]:10.6f} \t {D[4]:10.6f} \t {D[0]:10.9}\n')
 
-	A = 6.6260755E-34 * 1E-6 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[8])
-	B = 6.6260755E-34 * 1E-6 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[4])
-	C = 6.6260755E-34 * 1E-6 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[0])
+	A = 6.6260755E-34 * 1E-9 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[0])
+	B = 6.6260755E-34 * 1E-9 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[4])
+	C = 6.6260755E-34 * 1E-9 / (8 * (math.pi)**2 * 1.6605402E-27 * (0.529177249E-10)**2 * D[8])
 
-	print (F'Rotational constants (MHz):\n')
-	print (F'A = {A:9.3f} \t B = {B:9.3f} \t C = {C:9.3f}')
+	print (F'Rotational constants (GHz):')
+	print (F'A = {A:9.7f} \t B = {B:9.7f} \t C = {C:9.7f}')
 
 
 # END OF FILE
