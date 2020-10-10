@@ -285,7 +285,7 @@ if __name__ == '__main__':
 	print (F'\nMolecular center of mass in Bohr: {xcm / M :11.8f} {ycm / M :11.8f} {zcm / M :11.8f}\n')
 
 
-	# Translate a molecule to the molecular center of masse
+	# Translate a molecule to the molecular center of mass
 	def translated_geom(nom_atoms):
 		trans_geom = []
 		for i in range(nom_atoms):
